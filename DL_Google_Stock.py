@@ -19,7 +19,7 @@ from tensorflow.keras.layers import Dense, SimpleRNN
 
 # Read CSV file
 # skiprows=2 removes unwanted rows (Ticker, NaN rows)
-df = pd.read_csv(r"C:\Users\ACER\Downloads\Google_Stock_Price.csv", skiprows=2)
+df = pd.read_csv(r"/content/drive/MyDrive/Google_Stock_Price.csv", skiprows=2)
 
 # Rename columns properly
 df.columns = [
