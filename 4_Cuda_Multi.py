@@ -1,9 +1,8 @@
 from numba import cuda
 import numpy as np
 
-# ----------------------------------------
 # MATRIX MULTIPLICATION KERNEL
-# ----------------------------------------
+
 @cuda.jit
 def matrix_mul(a, b, c):
 
@@ -24,24 +23,61 @@ def matrix_mul(a, b, c):
         c[row][col] = total
 
 
-# Input matrices
-a = np.array([[1, 2],
-              [3, 4]])
+# USER INPUT
 
-b = np.array([[5, 6],
-              [7, 8]])
+# Matrix size
+rows_a = int(input("Enter number of rows for Matrix A: "))
+cols_a = int(input("Enter number of columns for Matrix A: "))
+
+rows_b = int(input("Enter number of rows for Matrix B: "))
+cols_b = int(input("Enter number of columns for Matrix B: "))
+
+# Check multiplication condition
+if cols_a != rows_b:
+    print("Matrix multiplication not possible!")
+    exit()
+
+# Input Matrix A
+print("\nEnter elements of Matrix A:")
+a_list = []
+
+for i in range(rows_a):
+    row = []
+    for j in range(cols_a):
+        val = int(input(f"A[{i}][{j}] = "))
+        row.append(val)
+    a_list.append(row)
+
+# Input Matrix B
+print("\nEnter elements of Matrix B:")
+b_list = []
+
+for i in range(rows_b):
+    row = []
+    for j in range(cols_b):
+        val = int(input(f"B[{i}][{j}] = "))
+        row.append(val)
+    b_list.append(row)
+
+# Convert to NumPy arrays
+a = np.array(a_list)
+b = np.array(b_list)
 
 # Output matrix
-c = np.zeros((2, 2))
+c = np.zeros((rows_a, cols_b))
 
 # Threads per block
-threads_per_block = (2, 2)
+threads_per_block = (16, 16)
 
 # Blocks per grid
-blocks_per_grid = (1, 1)
+blocks_per_grid_x = (rows_a + threads_per_block[0] - 1) // threads_per_block[0]
+blocks_per_grid_y = (cols_b + threads_per_block[1] - 1) // threads_per_block[1]
+
+blocks_per_grid = (blocks_per_grid_x, blocks_per_grid_y)
 
 # Launch kernel
 matrix_mul[blocks_per_grid, threads_per_block](a, b, c)
 
+# Print result
 print("\nMatrix Multiplication Result:")
 print(c)
